@@ -1,5 +1,5 @@
 # Webserver
 
-compile server.cpp and main.cpp
+Compile server.cpp and main.cpp
 
 Go to localhost:8080
