@@ -13,11 +13,17 @@ void Config::tokenize(char const *confFile) {
     std::stringstream buffer;
     std::string intermediate;
     buffer << myFile.rdbuf();
+
     while(getline(buffer, intermediate, ';'))
-    {
         _tokens.push_back(intermediate);
-    }
     myFile.close();
+    for (int i = 0; i < _tokens.size(); i++)
+        _tokens[i].erase(remove(_tokens[i].begin(), _tokens[i].end(), '\n'), _tokens[i].end());
+}
+
+std::string getFirstWord(std::string input) {
+    std::string firstWord = input.substr(0, input.find(" "));
+    return (firstWord);
 }
 
 int getValueIndex(std::string line) {
@@ -28,27 +34,87 @@ int getValueIndex(std::string line) {
 
 // ---------- Setters --------------
 
-void Config::setListenPort() {
+void    Config::setValues(std::string varName, int i) {
+    if (varName == "listen")
+        setListenPort(i);
+    if (varName == "server_name")
+        setServerName(i);
+    if  (varName == "root")
+        setRoot(i);
+    if (varName == "cgi")
+        setCgi(i);
+    if (varName == "index")
+        setIndex(i);
+    if  (varName == "location")
+        setLocations(i);
+}
+
+void Config::setListenPort(int i) {
     std::stringstream ss;
     std::string line;
     int num;
-    int i = getValueIndex(_tokens[0]);
-    while (_tokens[0][i])
-        line += _tokens[0][i++];
+    int j = getValueIndex(_tokens[i]);
+    while (_tokens[i][j])
+        line += _tokens[i][j++];
     ss << line;
     ss >> _listenPort;
 }
 
-void Config::setServerName() {
-    int i = getValueIndex(_tokens[1]);
+void Config::setServerName(int i) {
+    int j = getValueIndex(_tokens[i]);
     std::string line;
 
-    while (_tokens[1][i])
-        line += _tokens[1][i++];
+    while (_tokens[i][j])
+        line += _tokens[i][j++];
     _serverName.append(line);
 }
 
+void Config::setRoot(int i) {
+    int j = getValueIndex(_tokens[i]);
+    std::string line;
+
+    while (_tokens[i][j])
+        line += _tokens[i][j++];
+    _root.append(line);
+}
+
+void    Config::setCgi(int i) {
+    int j = getValueIndex(_tokens[i]);
+    std::string line;
+
+    while (_tokens[i][j])
+        line += _tokens[i][j++];
+    _cgi.append(line);
+}
+
+void    Config::setIndex(int i) {
+    int j = getValueIndex(_tokens[i]);
+    std::string line;
+
+    while (_tokens[i][j])
+        line += _tokens[i][j++];
+    _index.append(line);
+}
+
+void    Config::setLocations(int i) {
+    int j = getValueIndex(_tokens[i]);
+    std::string line;
+
+    while (_tokens[i][j])
+        line += _tokens[i][j++];
+    _locations.append(line);
+}
+
 // ---------- Getters ------------
+
+void    Config::getParsedValues() {
+    std::cout << "Listen port = " << getListenPort() << std::endl;
+    std::cout << "Server name = " << getServerName() << std::endl;
+    std::cout << "Root        = " << getRoot() << std::endl;
+    std::cout << "Cgi         = " << getCgi() << std::endl;
+    std::cout << "Index       = " << getIndex() << std::endl;
+    std::cout << "Locations   = " << getLocations() << std::endl;
+}
 
 int Config::getListenPort() {
     return (_listenPort);
@@ -58,25 +124,30 @@ std::string Config::getServerName() {
     return (_serverName);
 }
 
-std::string getFirstWord(std::string input) {
-    std::string firstWord = input.substr(0, input.find(" "));
-    return (firstWord);
+std::string Config::getRoot() {
+    return (_root);
 }
 
-void    Config::setValues(std::string varName) {
-    if (varName == "listen")
-        setListenPort();
-    if (varName == "server_name")
-        setServerName();
-    // if (varName == "root")
+std::string Config::getCgi() {
+    return (_cgi);
 }
+
+std::string Config::getIndex() {
+    return (_index);
+}
+
+std::string Config::getLocations() {
+    return (_locations);
+}
+
+// -------- Constructor -------------
 
 Config::Config(char const *confFile) {
     tokenize(confFile);
-    for (int i = 0; i < _tokens.size(); i++) {
-        setValues(getFirstWord(_tokens[i]));
-    }
-    // std::cout << getListenPort() << std::endl;
-    // std::cout << getServerName() << std::endl;
+
+    for (int i = 0; i < _tokens.size(); i++) 
+        setValues(getFirstWord(_tokens[i]), i);
+
+    getParsedValues();
 }
 
