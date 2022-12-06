@@ -23,10 +23,9 @@ OUTPUT		=	$(BIN_DIR)/$(EXEC_NAME)
 
 #======== SRCS =========#
 
-INC			=
+INC			= 	-I $(INCLUDE_DIR)
 
-SRCS		=	client.cpp \
-				config.cpp \
+SRCS		=	config.cpp \
 				main.cpp \
 				server.cpp \
 

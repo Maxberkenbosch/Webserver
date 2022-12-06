@@ -31,7 +31,6 @@ int getValueIndex(std::string line) {
 void Config::setListenPort() {
     std::stringstream ss;
     std::string line;
-    int num;
     int i = getValueIndex(_tokens[0]);
     while (_tokens[0][i])
         line += _tokens[0][i++];
@@ -73,7 +72,7 @@ void    Config::setValues(std::string varName) {
 
 Config::Config(char const *confFile) {
     tokenize(confFile);
-    for (int i = 0; i < _tokens.size(); i++) {
+    for (unsigned long i = 0; i < _tokens.size(); i++) {
         setValues(getFirstWord(_tokens[i]));
     }
     // std::cout << getListenPort() << std::endl;
