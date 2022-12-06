@@ -15,7 +15,7 @@ int main(int argc, char const *argv[])
     // long newSocket;
     // Server server;
     // char *hello = strdup("HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!");
-    // Config config(argv[1]);
+    Config config(argv[1]);
 
     // server.setUpServer();
     // while(1)

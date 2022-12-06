@@ -17,7 +17,7 @@ void Config::tokenize(char const *confFile) {
     while(getline(buffer, intermediate, ';'))
         _tokens.push_back(intermediate);
     myFile.close();
-    for (int i = 0; i < _tokens.size(); i++)
+    for (size_t i = 0; i < _tokens.size(); i++)
         _tokens[i].erase(remove(_tokens[i].begin(), _tokens[i].end(), '\n'), _tokens[i].end());
 }
 
@@ -52,7 +52,6 @@ void    Config::setValues(std::string varName, int i) {
 void Config::setListenPort(int i) {
     std::stringstream ss;
     std::string line;
-    int num;
     int j = getValueIndex(_tokens[i]);
     while (_tokens[i][j])
         line += _tokens[i][j++];
@@ -145,7 +144,7 @@ std::string Config::getLocations() {
 Config::Config(char const *confFile) {
     tokenize(confFile);
 
-    for (int i = 0; i < _tokens.size(); i++) 
+    for (size_t i = 0; i < _tokens.size(); i++) 
         setValues(getFirstWord(_tokens[i]), i);
 
     getParsedValues();
