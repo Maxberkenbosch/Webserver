@@ -21,6 +21,17 @@ void Config::tokenize(char const *confFile) {
         _tokens[i].erase(remove(_tokens[i].begin(), _tokens[i].end(), '\n'), _tokens[i].end());
 }
 
+// void    Config::parseLocations() {
+//     std::stringstream buffer;
+//     std::string intermediate;
+//     buffer << _locationsString;
+//     while(getline(buffer, intermediate, ' '))
+//         _locationsVec.push_back(intermediate);
+//     for (size_t i = 0; i < _locationsVec.size(); i++) {
+//         std::cout << _locationsVec[i] << std::endl;
+//     }
+// }
+
 std::string getFirstWord(std::string input) {
     std::string firstWord = input.substr(0, input.find(" "));
     return (firstWord);
@@ -99,9 +110,12 @@ void    Config::setLocations(int i) {
     int j = getValueIndex(_tokens[i]);
     std::string line;
 
-    while (_tokens[i][j])
+    while (_tokens[i][j] != ' ')
         line += _tokens[i][j++];
-    _locations.append(line);
+    line += "\n";
+    _locationsVec.push_back(line);
+    _locationsString.append(line);
+
 }
 
 // ---------- Getters ------------
@@ -112,7 +126,11 @@ void    Config::getParsedValues() {
     std::cout << "Root        = " << getRoot() << std::endl;
     std::cout << "Cgi         = " << getCgi() << std::endl;
     std::cout << "Index       = " << getIndex() << std::endl;
-    std::cout << "Locations   = " << getLocations() << std::endl;
+    // std::cout << "Locations   = " << getLocationsString() << std::endl;
+    std::cout << location
+    for (size_t i = 0; i < _locationsVec.size(); i++) {
+        std::cout << _locationsVec[i] << std::endl;
+    }
 }
 
 int Config::getListenPort() {
@@ -135,8 +153,8 @@ std::string Config::getIndex() {
     return (_index);
 }
 
-std::string Config::getLocations() {
-    return (_locations);
+std::string Config::getLocationsString() {
+    return (_locationsString);
 }
 
 // -------- Constructor -------------
@@ -146,7 +164,7 @@ Config::Config(char const *confFile) {
 
     for (size_t i = 0; i < _tokens.size(); i++) 
         setValues(getFirstWord(_tokens[i]), i);
-
+    // parseLocations();
     getParsedValues();
 }
 
