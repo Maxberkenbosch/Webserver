@@ -13,6 +13,8 @@ void ServerConf::tokenize(char const *confFile) {
     std::stringstream buffer;
     std::string intermediate;
     buffer << myFile.rdbuf();
+    _locationsString.clear(); // empties locations string from previous servers. 
+    _locationsVec.clear();
 
     while(getline(buffer, intermediate, ';'))
         _tokens.push_back(intermediate);
@@ -44,10 +46,6 @@ int getValueIndex(std::string line) {
 }
 
 // ---------- Setters --------------
-
-int ServerConf::getRead() {
-    return (readValues);
-}
 
 void    ServerConf::setValues(std::string varName, int i) {
     if (varName == "listen")
@@ -113,12 +111,13 @@ void    ServerConf::setIndex(int i) {
 void    ServerConf::setLocations(int i) {
     int j = getValueIndex(_tokens[i]);
     std::string line;
-
+    line.clear();
     while (_tokens[i][j] != ' ')
         line += _tokens[i][j++];
     line += "\n";
+    std::cout << "line = " << line;
     _locationsVec.push_back(line);
-    _locationsString.append(line);
+    // _locationsString.append(line);
 
 }
 
@@ -184,16 +183,15 @@ ServerConf ServerConf::getServerInfo(const char *confFile) {
 
     while (readValues < (int)_tokens.size()) {
         setValues(getFirstWord(_tokens[readValues]), readValues);
-        std::cout << getFirstWord(_tokens[readValues]) << std::endl;
+        // std::cout << getFirstWord(_tokens[readValues]) << std::endl;
         readValues++;
         if (getFirstWord(_tokens[readValues]) == "server") {
             readValues++;
             break;
         }
     }
-    std::cout << readValues << std::endl;
     // parseLocations();
-    // getParsedValues();
+    getParsedValues();
     return (*this);
 }
 

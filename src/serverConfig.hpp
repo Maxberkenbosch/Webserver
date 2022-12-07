@@ -20,7 +20,6 @@ public:
     void    setIndex(int i);
     void    setLocations(int i);
 
-    int     getRead();
     ServerConf  getServerInfo(const char *confFile);
 
     void        getParsedValues();
