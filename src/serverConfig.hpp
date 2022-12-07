@@ -1,12 +1,14 @@
-#ifndef CONFIG_HPP
-# define CONFIG_HPP
+#ifndef SERVERServerConf_HPP
+# define SERVERServerConf_HPP
 
 # include <vector>
 # include <iostream>
 
-class Config {
+class ServerConf {
 public:
-    Config(char const *confFile);
+    static int  readValues;
+
+    // ServerConf(char const *confFile);
     void    tokenize(char const *confFile);
     void    parseLocations();
 
@@ -17,6 +19,9 @@ public:
     void    setCgi(int i);
     void    setIndex(int i);
     void    setLocations(int i);
+
+    int     getRead();
+    ServerConf  getServerInfo(const char *confFile);
 
     void        getParsedValues();
     int         getListenPort();
