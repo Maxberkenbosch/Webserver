@@ -26,6 +26,11 @@ std::string getFirstWord(std::string input) {
     return (firstWord);
 }
 
+std::string getLocationPath(std::string input) {
+    std::string firstWord = input.substr(0, input.find("\t"));
+    return (firstWord);
+}
+
 int getValueIndex(std::string line) {
     int index = line.find(" ");
     index++;
@@ -95,13 +100,27 @@ void    ServerConf::setIndex(int i) {
     _index.append(line);
 }
 
+void    ServerConf::setLocationsMap(int i) {
+    std::string tmp; 
+    std::stringstream ss((std::string)_tokens[i]);
+
+    while(getline(ss, tmp, '\t')){
+        _locationsConfigArr.push_back(tmp);
+    }
+    _locationsConfigArr.push_back("\n");
+}
+
+
 void    ServerConf::setLocations(int i) {
     int j = getValueIndex(_tokens[i]);
     std::string line;
     line.clear();
     while (_tokens[i][j] != ' ')
         line += _tokens[i][j++];
+    std::cout << "test, line = " << line << std::endl;
+    std::cout << "test, first word = " << getFirstWord(line) << std::endl;
     _locationsVec.push_back(line);
+    setLocationsMap(i);
     // _locationsString.append(line);
 
 }
@@ -110,16 +129,21 @@ void    ServerConf::setLocations(int i) {
 
 void    ServerConf::getParsedValues() {
     std::cout << "_____________________________________" << std::endl << std::endl;
-    std::cout << "Listen port = " << getListenPort() << std::endl;
-    std::cout << "Server name = " << getServerName() << std::endl;
-    std::cout << "Root        = " << getRoot() << std::endl;
-    std::cout << "Cgi         = " << getCgi() << std::endl;
-    std::cout << "Index       = " << getIndex() << std::endl;
-    std::cout << "Locations   = \n";
+    std::cout << "Listen port    = " << getListenPort() << std::endl;
+    std::cout << "Server name    = " << getServerName() << std::endl;
+    std::cout << "Root           = " << getRoot() << std::endl;
+    std::cout << "Cgi            = " << getCgi() << std::endl;
+    std::cout << "Index          = " << getIndex() << std::endl;
+    std::cout << "Location paths = \n";
     // std::cout << "Locations   = " << getLocationsString() << std::endl;
     for (size_t i = 0; i < _locationsVec.size(); i++) {
-        std::cout << "              " << _locationsVec[i] << std::endl;
+        std::cout << "                 " << _locationsVec[i] << std::endl;
     }
+    std::cout << "Locations      = \n";
+    for (size_t i = 0; i < _locationsConfigArr.size(); i++) {
+        std::cout << "                 " << _locationsConfigArr[i] << std::endl;
+    }
+    // std::cout << "test              " << _locationsVec[0] << std::endl;
     std::cout << "_____________________________________" << std::endl << std::endl;
 }
 

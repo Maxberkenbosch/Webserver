@@ -1,8 +1,9 @@
-#ifndef SERVERServerConf_HPP
-# define SERVERServerConf_HPP
+#ifndef SERVERCONF_HPP
+# define SERVERCONF_HPP
 
 # include <vector>
 # include <iostream>
+#include <map>
 
 class ServerConf {
 public:
@@ -19,6 +20,7 @@ public:
     void    setCgi(int i);
     void    setIndex(int i);
     void    setLocations(int i);
+    void    setLocationsMap(int i);
 
     ServerConf  getServerInfo(const char *confFile);
 
@@ -30,7 +32,6 @@ public:
     std::string getIndex();
     std::string getLocationsString();
 
-// TODO: setup these vars in a seperate class
 private:
     std::vector <std::string>   _tokens;
     int                         _listenPort;
@@ -40,6 +41,8 @@ private:
     std::string                 _index;
     std::string                 _locationsString;
     std::vector<std::string>    _locationsVec;
+    std::map<std::string, std::string> locationsMap;
+    std::vector <std::string> _locationsConfigArr;
 };
 
 #endif
