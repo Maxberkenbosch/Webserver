@@ -17,11 +17,12 @@ int main(int argc, char const *argv[])
     // Server server;
     // char *hello = strdup("HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!");
     int serverCount = countServers(argv[1]);
-    ServerConf servers[serverCount - 1];
-
-    for (int i = 0; i < serverCount; i++) {
-        ServerConf servers[i];
-        servers[i].getServerInfo(argv[1]);
+    
+    ServerConf** serverArray = new ServerConf*[serverCount - 1]; // where n is number of arrays to create
+    for( int  i = 0; i < serverCount; i++ )
+    {
+        serverArray[i] = new ServerConf();
+        serverArray[i]->getServerInfo(argv[1]);
     }
 
     // server.setUpServer();

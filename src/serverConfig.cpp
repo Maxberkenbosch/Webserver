@@ -13,8 +13,6 @@ void ServerConf::tokenize(char const *confFile) {
     std::stringstream buffer;
     std::string intermediate;
     buffer << myFile.rdbuf();
-    _locationsString.clear(); // empties locations string from previous servers. 
-    _locationsVec.clear();
 
     while(getline(buffer, intermediate, ';'))
         _tokens.push_back(intermediate);
@@ -22,17 +20,6 @@ void ServerConf::tokenize(char const *confFile) {
     for (size_t i = 0; i < _tokens.size(); i++)
         _tokens[i].erase(remove(_tokens[i].begin(), _tokens[i].end(), '\n'), _tokens[i].end());
 }
-
-// void    ServerConf::parseLocations() {
-//     std::stringstream buffer;
-//     std::string intermediate;
-//     buffer << _locationsString;
-//     while(getline(buffer, intermediate, ' '))
-//         _locationsVec.push_back(intermediate);
-//     for (size_t i = 0; i < _locationsVec.size(); i++) {
-//         std::cout << _locationsVec[i] << std::endl;
-//     }
-// }
 
 std::string getFirstWord(std::string input) {
     std::string firstWord = input.substr(0, input.find(" "));
@@ -114,8 +101,6 @@ void    ServerConf::setLocations(int i) {
     line.clear();
     while (_tokens[i][j] != ' ')
         line += _tokens[i][j++];
-    line += "\n";
-    std::cout << "line = " << line;
     _locationsVec.push_back(line);
     // _locationsString.append(line);
 
@@ -124,15 +109,18 @@ void    ServerConf::setLocations(int i) {
 // ---------- Getters ------------
 
 void    ServerConf::getParsedValues() {
+    std::cout << "_____________________________________" << std::endl << std::endl;
     std::cout << "Listen port = " << getListenPort() << std::endl;
     std::cout << "Server name = " << getServerName() << std::endl;
     std::cout << "Root        = " << getRoot() << std::endl;
     std::cout << "Cgi         = " << getCgi() << std::endl;
     std::cout << "Index       = " << getIndex() << std::endl;
+    std::cout << "Locations   = \n";
     // std::cout << "Locations   = " << getLocationsString() << std::endl;
     for (size_t i = 0; i < _locationsVec.size(); i++) {
-        std::cout << _locationsVec[i] << std::endl;
+        std::cout << "              " << _locationsVec[i] << std::endl;
     }
+    std::cout << "_____________________________________" << std::endl << std::endl;
 }
 
 int ServerConf::getListenPort() {
