@@ -10,7 +10,8 @@ public:
 
     ServerConf  getServerInfo(const char *confFile);
     void    tokenize(char const *confFile);
-    void    parseLocations();
+    void    checkEmptyValues();
+
 
     void    setValues(std::string varName, int i);
     void    setListenPort(int i);
@@ -18,8 +19,8 @@ public:
     void    setRoot(int i);
     void    setCgi(int i);
     void    setIndex(int i);
-    void    setLocations(int i);
-    void    setLocationsMap(int i);
+    void    setLocationPaths(int i);
+    void    setLocationsInfo(int i);
 
     void        getParsedValues();
     int         getListenPort();
@@ -35,8 +36,8 @@ private:
     std::string                 _root;
     std::string                 _cgi;
     std::string                 _index;
-    std::vector<std::string>    _locationsVec;
-    std::vector<std::string>    _locationsConfigArr;
+    std::vector<std::string>    _locationPaths;
+    std::vector<std::string>    _locationsInfo;
 };
 
 #endif

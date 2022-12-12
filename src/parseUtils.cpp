@@ -14,5 +14,6 @@ int countServers(const char *confFile) {
         count++;
     } 
     fin.close();
+    free(word);
     return (count);
 }

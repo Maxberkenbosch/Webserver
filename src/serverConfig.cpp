@@ -21,6 +21,15 @@ void ServerConf::tokenize(char const *confFile) {
         _tokens[i].erase(remove(_tokens[i].begin(), _tokens[i].end(), '\n'), _tokens[i].end());
 }
 
+void    ServerConf::checkEmptyValues() {
+    if (!_listenPort)
+        _listenPort = 80;
+    if (_root.empty())
+        _root = "test";
+    if (_serverName.empty())
+        _serverName = _root;
+}
+
 std::string getFirstWord(std::string input) {
     std::string firstWord = input.substr(0, input.find(" "));
     return (firstWord);
@@ -50,8 +59,10 @@ void    ServerConf::setValues(std::string varName, int i) {
         setCgi(i);
     if (varName == "index")
         setIndex(i);
-    if  (varName == "location")
-        setLocations(i);
+    if  (varName == "location") {
+        setLocationPaths(i);
+        setLocationsInfo(i);
+    }
 }
 
 void ServerConf::setListenPort(int i) {
@@ -100,26 +111,23 @@ void    ServerConf::setIndex(int i) {
     _index.append(line);
 }
 
-void    ServerConf::setLocationsMap(int i) {
+void    ServerConf::setLocationPaths(int i) {
+    int j = getValueIndex(_tokens[i]);
+    std::string line;
+    while (_tokens[i][j] != ' ' && _tokens[i][j])
+        line += _tokens[i][j++];
+    _locationPaths.push_back(getLocationPath(line));
+    line.clear();
+}
+
+void    ServerConf::setLocationsInfo(int i) {
     std::string tmp; 
     std::stringstream ss((std::string)_tokens[i]);
 
     while(getline(ss, tmp, '\t')){
-        _locationsConfigArr.push_back(tmp);
+        _locationsInfo.push_back(tmp);
     }
-    _locationsConfigArr.push_back("\n");
-}
-
-
-void    ServerConf::setLocations(int i) {
-    int j = getValueIndex(_tokens[i]);
-    std::string line;
-    line.clear();
-    while (_tokens[i][j] != ' ')
-        line += _tokens[i][j++];
-    _locationsVec.push_back(getLocationPath(line));
-    setLocationsMap(i);
-
+    _locationsInfo.push_back("\n");
 }
 
 // ---------- Getters ------------
@@ -132,12 +140,12 @@ void    ServerConf::getParsedValues() {
     std::cout << "Cgi            = " << getCgi() << std::endl;
     std::cout << "Index          = " << getIndex() << std::endl;
     std::cout << "Location paths = \n";
-    for (size_t i = 0; i < _locationsVec.size(); i++) {
-        std::cout << "                 " << _locationsVec[i] << std::endl;
+    for (size_t i = 0; i < _locationPaths.size(); i++) {
+        std::cout << "                 " << _locationPaths[i] << std::endl;
     }
     std::cout << "Locations      = \n";
-    for (size_t i = 0; i < _locationsConfigArr.size(); i++) {
-        std::cout << "                 " << _locationsConfigArr[i] << std::endl;
+    for (size_t i = 0; i < _locationsInfo.size(); i++) {
+        std::cout << "                 " << _locationsInfo[i] << std::endl;
     }
     std::cout << "_____________________________________" << std::endl << std::endl;
 }
@@ -173,7 +181,8 @@ ServerConf ServerConf::getServerInfo(const char *confFile) {
             break;
         }
     }
-    getParsedValues();
+    // checkEmptyValues();
+    //getParsedValues();
     return (*this);
 }
 

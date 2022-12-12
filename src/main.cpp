@@ -9,16 +9,16 @@
 int ServerConf::readValues = 1;
 
 // https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-build-a-simple-http-server-from-scratch-d1ef8945e4fa
-int main(int argc, char const *argv[])
+int check(int argc, char const *argv[])
 {
-    (void)argc;
+    // (void)argc;
     // long valread;
     // long newSocket;
     // Server server;
     // char *hello = strdup("HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!");
     int serverCount = countServers(argv[1]);
     
-    ServerConf** serverArray = new ServerConf*[serverCount - 1]; // where n is number of arrays to create
+    ServerConf** serverArray = new ServerConf*[serverCount - 1];
     for( int  i = 0; i < serverCount; i++ )
     {
         serverArray[i] = new ServerConf();
@@ -38,5 +38,10 @@ int main(int argc, char const *argv[])
     //     printf("------------------Hello message sent-------------------\n");
     //     close(newSocket);
     // }
+    // for(int i = 0; i < serverCount; i++) {
+    //     std::cout << i << std::endl;
+    //     delete serverArray[i];
+    // }
+    // delete[] serverArray;
     return 0;
 }
