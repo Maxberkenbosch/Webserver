@@ -8,10 +8,14 @@
 
 int ServerConf::readValues = 1;
 
+// Goede bron voor HTTP request vs response :
+// https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages#:~:text=HTTP%20messages%20are%20how%20data,the%20answer%20from%20the%20server.
+
+// Bron om simpele webserver te snappen:
 // https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-build-a-simple-http-server-from-scratch-d1ef8945e4fa
-int check(int argc, char const *argv[])
+int main(int argc, char const *argv[])
 {
-    // (void)argc;
+    (void)argc;
     // long valread;
     // long newSocket;
     // Server server;
@@ -23,6 +27,7 @@ int check(int argc, char const *argv[])
     {
         serverArray[i] = new ServerConf();
         serverArray[i]->getServerInfo(argv[1]);
+        // serverArray[i]->setLocationAttr
     }
 
     // server.setUpServer();

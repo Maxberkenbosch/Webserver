@@ -1,4 +1,5 @@
 #include "serverConfig.hpp"
+#include "parseUtils.hpp"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -25,25 +26,10 @@ void    ServerConf::checkEmptyValues() {
     if (!_listenPort)
         _listenPort = 80;
     if (_root.empty())
-        _root = "test";
+        throw std::invalid_argument( "root is empty" );
     if (_serverName.empty())
         _serverName = _root;
-}
-
-std::string getFirstWord(std::string input) {
-    std::string firstWord = input.substr(0, input.find(" "));
-    return (firstWord);
-}
-
-std::string getLocationPath(std::string input) {
-    std::string firstWord = input.substr(0, input.find("\t"));
-    return (firstWord);
-}
-
-int getValueIndex(std::string line) {
-    int index = line.find(" ");
-    index++;
-    return (index);
+    // Moet nog worden uitgebreid
 }
 
 // ---------- Setters --------------
@@ -130,20 +116,48 @@ void    ServerConf::setLocationsInfo(int i) {
     _locationsInfo.push_back("\n");
 }
 
+void    ServerConf::setLocationAttributes (const char *path) {
+    std::stringstream ss;
+    ss << "location " << path ;
+    std::string s = ss.str();
+    std::vector<std::string>::iterator it;
+
+    it = std::find (_locationsInfo.begin(), _locationsInfo.end(), s);
+    if (it != _locationsInfo.end()) {
+        while (*it != "\n") {
+            if (getFirstWord(*it) == "allow_methods")
+                _allowedMethod = getValue(*it);
+            if (getFirstWord(*it) == "index")
+                _index = getValue(*it);
+            if (getFirstWord(*it) == "root")
+                _root = getValue(*it);
+            if (getFirstWord(*it) == "cgi")
+                _cgi = getValue(*it);
+            // if (getFirstWord(*it) == "client_body_buffer_size")
+            //     _clientBufferSize = getValue(*it);
+            *it++;
+        }
+    }
+    else {
+        throw std::invalid_argument( "Path argument in setLocationAttributes function is incorrect" );
+    }
+}
+
 // ---------- Getters ------------
 
 void    ServerConf::getParsedValues() {
     std::cout << "_____________________________________" << std::endl << std::endl;
-    std::cout << "Listen port    = " << getListenPort() << std::endl;
-    std::cout << "Server name    = " << getServerName() << std::endl;
-    std::cout << "Root           = " << getRoot() << std::endl;
-    std::cout << "Cgi            = " << getCgi() << std::endl;
-    std::cout << "Index          = " << getIndex() << std::endl;
-    std::cout << "Location paths = \n";
+    std::cout << "Listen port     = " << getListenPort() << std::endl;
+    std::cout << "Server name     = " << getServerName() << std::endl;
+    std::cout << "Root            = " << getRoot() << std::endl;
+    std::cout << "Cgi             = " << getCgi() << std::endl;
+    std::cout << "Index           = " << getIndex() << std::endl;
+    std::cout << "Allowed methods = " << getAllowedMethod() << std::endl;
+    std::cout << "Location paths  = \n";
     for (size_t i = 0; i < _locationPaths.size(); i++) {
         std::cout << "                 " << _locationPaths[i] << std::endl;
     }
-    std::cout << "Locations      = \n";
+    std::cout << "Locations       = \n";
     for (size_t i = 0; i < _locationsInfo.size(); i++) {
         std::cout << "                 " << _locationsInfo[i] << std::endl;
     }
@@ -170,19 +184,28 @@ std::string ServerConf::getIndex() {
     return (_index);
 }
 
+std::string ServerConf::getAllowedMethod() {
+    return (_allowedMethod);
+}
+
+// ----------- Setting up the ServerConf object ----------------
+
 ServerConf ServerConf::getServerInfo(const char *confFile) {
     tokenize(confFile);
 
     while (readValues < (int)_tokens.size()) {
-        setValues(getFirstWord(_tokens[readValues]), readValues);
+        std::string tmp = getFirstWord(_tokens[readValues]);
+        if (!tmp.empty())
+            setValues(getFirstWord(_tokens[readValues]), readValues);
         readValues++;
         if (getFirstWord(_tokens[readValues]) == "server") {
             readValues++;
             break;
         }
     }
-    // checkEmptyValues();
-    //getParsedValues();
+    checkEmptyValues();
+    setLocationAttributes("/directory"); // Right now this is hardcoded, but it needs the right location path.
+    getParsedValues();
     return (*this);
 }
 

@@ -17,3 +17,31 @@ int countServers(const char *confFile) {
     free(word);
     return (count);
 }
+
+std::string getFirstWord(std::string input) {
+    std::string firstWord = input.substr(0, input.find(" ")); //Leak??
+
+    return (firstWord);
+}
+
+std::string getLocationPath(std::string input) {
+    std::string firstWord = input.substr(0, input.find("\t")); // Leak?
+
+    return (firstWord);
+}
+
+std::string getValue(std::string input) {
+    int i = 0;
+
+    while (input[i] != ' ')
+        i++;
+    std::string value = input.substr(i + 1, input.find("\n")); // Leak?
+
+    return (value);
+}
+
+int getValueIndex(std::string line) {
+    int index = line.find(" ");
+    index++;
+    return (index);
+}

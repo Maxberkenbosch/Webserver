@@ -5,13 +5,14 @@
 # include <iostream>
 #include <map>
 
+// using namespace std;
+
 class ServerConf {
 public:
     static int  readValues;
 
-    // ServerConf(char const *confFile);
     void    tokenize(char const *confFile);
-    void    parseLocations();
+    void    checkEmptyValues();
 
     void    setValues(std::string varName, int i);
     void    setListenPort(int i);
@@ -19,8 +20,9 @@ public:
     void    setRoot(int i);
     void    setCgi(int i);
     void    setIndex(int i);
-    void    setLocations(int i);
-    void    setLocationsMap(int i);
+    void    setLocationPaths(int i);
+    void    setLocationsInfo(int i);
+    void    setLocationAttributes(const char *path);
 
     ServerConf  getServerInfo(const char *confFile);
 
@@ -30,7 +32,7 @@ public:
     std::string getRoot();
     std::string getCgi();
     std::string getIndex();
-    std::string getLocationsString();
+    std::string getAllowedMethod();
 
 private:
     std::vector <std::string>   _tokens;
@@ -39,10 +41,11 @@ private:
     std::string                 _root;
     std::string                 _cgi;
     std::string                 _index;
-    std::string                 _locationsString;
-    std::vector<std::string>    _locationsVec;
-    std::map<std::string, std::string> locationsMap;
-    std::vector <std::string> _locationsConfigArr;
+    std::vector<std::string>    _locationPaths;
+    std::vector<std::string>    _locationsInfo;
+    std::string                 _allowedMethod;
+    // int                         _clientBufferSize;
+
 };
 
 #endif
