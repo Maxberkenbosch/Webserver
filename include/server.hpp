@@ -6,7 +6,7 @@
 
 class Server {
 public:
-    static const int PORT = 8080;
+    static const int PORT = 8088;
     int     setUpServer(void);
     void    setAddr(void);
     int     bindToClient(void);

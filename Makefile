@@ -6,7 +6,7 @@
 #    By: rubennijhuis <rubennijhuis@student.coda      +#+                      #
 #                                                    +#+                       #
 #    Created: 2022/02/02 20:54:00 by rubennijhui   #+#    #+#                  #
-#    Updated: 2022/07/24 20:16:32 by rubennijhui   ########   odam.nl          #
+#    Updated: 2022/12/15 16:25:14 by mberkenb      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,6 +29,7 @@ SRCS		=	serverConfig.cpp \
 				main.cpp \
 				server.cpp \
 				parseUtils.cpp \
+				requestConf.cpp \
 
 OBJS		=	$(addprefix $(OBJS_DIR)/,$(SRCS:.cpp=.o))
 

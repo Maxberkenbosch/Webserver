@@ -45,3 +45,10 @@ int getValueIndex(std::string line) {
     index++;
     return (index);
 }
+
+std::string getNthWord(std::string s, std::size_t n)
+{
+    std::istringstream iss (s);
+    while(n-- > 0 && (iss >> s));
+    return s;
+}

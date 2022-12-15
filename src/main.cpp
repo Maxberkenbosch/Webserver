@@ -5,6 +5,7 @@
 #include <iostream>
 #include "serverConfig.hpp"
 #include "parseUtils.hpp"
+#include "requestConf.hpp"
 
 int ServerConf::readValues = 1;
 
@@ -40,6 +41,9 @@ int main(int argc, char const *argv[])
 
         char buffer[30000] = {0};
         valread = read( newSocket , buffer, 30000);
+        RequestConf requestconf = RequestConf(buffer);
+        (void)requestconf;
+        //requestconf.getRequestInfo();
         printf("%s\n",buffer );
         write(newSocket, hello, strlen(hello));
         printf("------------------Hello message sent-------------------\n");

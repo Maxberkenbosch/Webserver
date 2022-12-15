@@ -207,5 +207,7 @@ ServerConf ServerConf::getServerInfo(const char *confFile) {
     setLocationAttributes("/directory"); // Right now this is hardcoded, but it needs the right location path.
     getParsedValues();
     return (*this);
+
+    // Locations still need to be validated!
 }
 
