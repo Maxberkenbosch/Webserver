@@ -23,9 +23,11 @@ int main(int argc, char const *argv[])
     long valread;
     long newSocket;
     Server server;
+    // The hello variable is temporarily being used as the request line
     char *hello = strdup("HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!");
     // int serverCount = countServers(argv[1]);
     
+    // Dinamically creating [serverCount] amount of serverConf objects
     // ServerConf** serverArray = new ServerConf*[serverCount - 1];
     // for( int  i = 0; i < serverCount; i++ )
     // {
@@ -39,12 +41,15 @@ int main(int argc, char const *argv[])
         printf("\n+++++++ Waiting for new connection ++++++++\n\n");
         newSocket = server.acceptSocket();
 
+        // Reading and storing the incoming request
         char buffer[30000] = {0};
         valread = read( newSocket , buffer, 30000);
+
+        // The RequestConf objects is initialized using the read request
         RequestConf requestconf = RequestConf(buffer);
-        (void)requestconf;
-        //requestconf.getRequestInfo();
-        printf("%s\n",buffer );
+        // (void)requestconf;
+        requestconf.printRequestInfo();
+        // printf("%s\n",buffer );
         write(newSocket, hello, strlen(hello));
         printf("------------------Hello message sent-------------------\n");
         close(newSocket);

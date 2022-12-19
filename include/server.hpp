@@ -6,7 +6,7 @@
 
 class Server {
 public:
-    static const int PORT = 8088;
+    static const int PORT = 8013;
     int     setUpServer(void);
     void    setAddr(void);
     int     bindToClient(void);
@@ -15,7 +15,7 @@ public:
 
 private:
     int         _serverFd;
-    struct      sockaddr_in _addr;
+    struct      sockaddr_in _addr;     
     // t_listen    _listen;
 };
 

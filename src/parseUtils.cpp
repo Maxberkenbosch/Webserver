@@ -52,3 +52,18 @@ std::string getNthWord(std::string s, std::size_t n)
     while(n-- > 0 && (iss >> s));
     return s;
 }
+
+std::string getRequestValue(std::string input)
+{
+    std::string result;
+    int i = 0;
+
+    while (input[i] != ' ')
+        i++;
+    i++;
+    while (input[i]) {
+        result += input[i];
+        i++;
+    }
+    return (result);
+}

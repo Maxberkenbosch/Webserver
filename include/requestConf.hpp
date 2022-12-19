@@ -9,12 +9,18 @@ class RequestConf {
 public:
     RequestConf(const char *buffer);
 
-    void    tokenize(char const *buffer);
-    void    checkBadRequest();
+    void        tokenize(char const *buffer);
+    int         checkBadRequest();
 
-    void    setRequestAttributes();
+    std::string getMethod ();
+    std::string getPath ();
+    std::string getHttpVersion ();
+    std::string getValue(std::string key);
 
-    void    getRequestInfo();
+
+    void        setRequestAttributes();
+
+    void        printRequestInfo();
 
 private:
     std::vector <std::string>   _requestVec;
@@ -22,7 +28,7 @@ private:
     std::string                 _path;
     std::string                 _httpVersion;
 
-    std::map<std::string, std::string>  _header;
+    std::map<std::string, std::string>  _requestContent;
     // std::map<std::string, std::string>  _body;
 };
 
