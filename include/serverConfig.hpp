@@ -3,12 +3,15 @@
 
 # include <vector>
 # include <iostream>
-#include <map>
+# include <map>
 
 // using namespace std;
 
 class ServerConf {
 public:
+    ServerConf(const ServerConf& ref);
+    ServerConf& operator=(const ServerConf &obj);
+
     static int  readValues;
 
     void    tokenize(char const *confFile);
@@ -33,6 +36,7 @@ public:
     std::string getCgi();
     std::string getIndex();
     std::string getAllowedMethod();
+    std::vector<std::string> getLocationPaths();
 
 private:
     std::vector <std::string>   _tokens;
@@ -45,7 +49,6 @@ private:
     std::vector<std::string>    _locationsInfo;
     std::string                 _allowedMethod;
     // int                         _clientBufferSize;
-
 };
 
 #endif

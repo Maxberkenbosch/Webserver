@@ -188,6 +188,10 @@ std::string ServerConf::getAllowedMethod() {
     return (_allowedMethod);
 }
 
+std::vector<std::string> ServerConf::getLocationPaths() {
+    return (_locationPaths);
+}
+
 // ----------- Setting up the ServerConf object ----------------
 
 ServerConf ServerConf::getServerInfo(const char *confFile) {
@@ -204,10 +208,38 @@ ServerConf ServerConf::getServerInfo(const char *confFile) {
         }
     }
     checkEmptyValues();
-    setLocationAttributes("/directory"); // Right now this is hardcoded, but it needs the right location path.
+    // setLocationAttributes("/directory"); // Right now this is hardcoded, but it needs the right location path.
     getParsedValues();
     return (*this);
 
     // Locations still need to be validated!
+}
+
+// ------------ Constructors --------------
+
+ServerConf::ServerConf(const ServerConf& ref) {
+    if (this != &ref) {
+		this->_listenPort = ref._listenPort;
+		this->_root = ref._root;
+		this->_serverName = ref._serverName;
+		this->_cgi = ref._cgi;
+		this->_index = ref._index;
+		this->_locationPaths = ref._locationPaths;
+		this->_locationsInfo = ref._locationsInfo;
+	}
+	return ;
+}
+
+ServerConf& ServerConf::operator=(const ServerConf &obj) {
+    if (this != &obj) {
+		this->_listenPort = obj._listenPort;
+		this->_root = obj._root;
+		this->_serverName = obj._serverName;
+		this->_cgi = obj._cgi;
+		this->_index = obj._index;
+		this->_locationPaths = obj._locationPaths;
+		this->_locationsInfo = obj._locationsInfo;
+	}
+	return ;
 }
 

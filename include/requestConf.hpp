@@ -34,6 +34,7 @@ private:
     int                         _statusCode;
 
     std::map<std::string, std::string>  _requestContent;
+    ServerConf                  _customServerconf;
     // std::map<std::string, std::string>  _body;
 };
 

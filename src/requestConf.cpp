@@ -21,19 +21,29 @@ void    RequestConf::tokenize(char const *buffer) {
 int    RequestConf::getStatusCode(ServerConf** serverArray, int size) {
     // WIP!
     // Only Get, Post and Delete need to be supported
-    bool portFound = false;
+    bool found = false;
+    std::vector<std::string> locations;
 
     if (_method != "GET" && _method != "POST" && _method != "DELETE")
         return (400);
     for (int i = 0; i <= size; i++) {
         if (serverArray[i]->getListenPort() == getHost(getValue("Host:"))) {
             _serverIndex = i;
-            portFound = true;
+            found = true;
         }
     }
-    if (!portFound)
+    if (!found)
         return (400);
-    // getHost(getValue("Host:"));
+    found = false;
+    locations = serverArray[_serverIndex]->getLocationPaths();
+    for (size_t i = 0; i < locations.size(); i++) {
+        if (locations[i] == _path) {
+            // 
+            found = true;
+        }
+    }
+    if (!found)
+        return (404);
     // TO DO: Add check to see if Url/path exists in Locations (from ServerConf)
     return (200);
 }
