@@ -18,12 +18,24 @@ void    RequestConf::tokenize(char const *buffer) {
     }
 }
 
-int    RequestConf::checkBadRequest() {
+int    RequestConf::getStatusCode(ServerConf** serverArray, int size) {
     // WIP!
     // Only Get, Post and Delete need to be supported
-    if (_method == "GET" || _method == "POST" || _method == "DELETE")
-        return (200);
-    return (400);
+    bool portFound = false;
+
+    if (_method != "GET" && _method != "POST" && _method != "DELETE")
+        return (400);
+    for (int i = 0; i <= size; i++) {
+        if (serverArray[i]->getListenPort() == getHost(getValue("Host:"))) {
+            _serverIndex = i;
+            portFound = true;
+        }
+    }
+    if (!portFound)
+        return (400);
+    // getHost(getValue("Host:"));
+    // TO DO: Add check to see if Url/path exists in Locations (from ServerConf)
+    return (200);
 }
 
 
@@ -38,8 +50,7 @@ void    RequestConf::printRequestInfo() {
     std::cout << _httpVersion << std::endl << std::endl;
     std::cout << "Map:" << std::endl;
     for (itr = _requestContent.begin(); itr != _requestContent.end(); ++itr) {
-        std::cout << itr->first << ' ' << itr->second
-             << '\n';
+        std::cout << itr->first << ' ' << itr->second << std::endl;
     }
 }
 
@@ -73,10 +84,15 @@ void    RequestConf::setRequestAttributes() {
     _path = getNthWord(_requestVec[0], 2);
     _httpVersion = getNthWord(_requestVec[0], 3);
 
-    // Setting the Header and/or Body variables in a map
+    // Setting the Heade Body variables in a map
+    // for (size_t i = 1; i < _requestVec.size() - 1; ++i) {
+    //     _requestContent.insert(std::pair<std::string, std::string>(getNthWord(_requestVec[i], 1), getRequestValue(_requestVec[i])));
+    // }
+
     for (size_t i = 1; i < _requestVec.size() - 1; ++i) {
         _requestContent.insert(std::pair<std::string, std::string>(getNthWord(_requestVec[i], 1), getRequestValue(_requestVec[i])));
     }
+
     // Setting the body
     // *it++;
     // if (_method == "POST") {
@@ -90,7 +106,7 @@ void    RequestConf::setRequestAttributes() {
 
 // ---------- Constructor -------------
 
-RequestConf::RequestConf(const char *buffer) {
+RequestConf::RequestConf(const char *buffer, ServerConf** serverArray, int size) {
     // Putting the request in a vector
     tokenize(buffer);
 
@@ -98,5 +114,6 @@ RequestConf::RequestConf(const char *buffer) {
     setRequestAttributes();
 
     // Checking Valid request and returning a status code
-    int statusCode = checkBadRequest(); 
+    // Source Status codes: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+    _statusCode = getStatusCode(serverArray, size); 
 }

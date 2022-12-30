@@ -4,13 +4,14 @@
 #include <map>
 #include <vector>
 #include <string>
+#include "serverConfig.hpp"
 
 class RequestConf {
 public:
-    RequestConf(const char *buffer);
+    RequestConf(const char *buffer, ServerConf** serverArray, int size);
 
     void        tokenize(char const *buffer);
-    int         checkBadRequest();
+    int         getStatusCode(ServerConf** serverArray, int size);
 
     std::string getMethod ();
     std::string getPath ();
@@ -23,10 +24,14 @@ public:
     void        printRequestInfo();
 
 private:
+    int                         _serverIndex;
+
     std::vector <std::string>   _requestVec;
     std::string                 _method;
     std::string                 _path;
     std::string                 _httpVersion;
+
+    int                         _statusCode;
 
     std::map<std::string, std::string>  _requestContent;
     // std::map<std::string, std::string>  _body;

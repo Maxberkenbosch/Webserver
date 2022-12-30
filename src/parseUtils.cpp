@@ -1,6 +1,7 @@
 #include "parseUtils.hpp"
 #include <sstream>
 #include <fstream>
+#include <iostream>
 
 int countServers(const char *confFile) {
     std::ifstream fin(confFile);
@@ -65,5 +66,20 @@ std::string getRequestValue(std::string input)
         result += input[i];
         i++;
     }
+    return (result);
+}
+
+int getHost(std::string value)
+{
+    int i = 0;
+    std::string str;
+    int result;
+
+    while (value[i] != ':')
+        i++;
+    i++;
+    while (value[i])
+        str += value[i++];
+    result = stoi(str);
     return (result);
 }
