@@ -9,8 +9,10 @@
 
 class ServerConf {
 public:
-    ServerConf(const ServerConf& ref);
-    ServerConf& operator=(const ServerConf &obj);
+    ServerConf();
+    ~ServerConf();
+    ServerConf(const ServerConf* ref);
+    ServerConf& operator=(const ServerConf* obj);
 
     static int  readValues;
 
@@ -25,9 +27,9 @@ public:
     void    setIndex(int i);
     void    setLocationPaths(int i);
     void    setLocationsInfo(int i);
-    void    setLocationAttributes(const char *path);
+    void    setLocationAttributes(std::string path);
 
-    ServerConf  getServerInfo(const char *confFile);
+    ServerConf  setServerInfo(const char *confFile);
 
     void        getParsedValues();
     int         getListenPort();

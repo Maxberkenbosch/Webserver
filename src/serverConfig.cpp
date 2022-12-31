@@ -116,7 +116,7 @@ void    ServerConf::setLocationsInfo(int i) {
     _locationsInfo.push_back("\n");
 }
 
-void    ServerConf::setLocationAttributes (const char *path) {
+void    ServerConf::setLocationAttributes (std::string path) {
     std::stringstream ss;
     ss << "location " << path ;
     std::string s = ss.str();
@@ -194,7 +194,7 @@ std::vector<std::string> ServerConf::getLocationPaths() {
 
 // ----------- Setting up the ServerConf object ----------------
 
-ServerConf ServerConf::getServerInfo(const char *confFile) {
+ServerConf ServerConf::setServerInfo(const char *confFile) {
     tokenize(confFile);
 
     while (readValues < (int)_tokens.size()) {
@@ -217,29 +217,43 @@ ServerConf ServerConf::getServerInfo(const char *confFile) {
 
 // ------------ Constructors --------------
 
-ServerConf::ServerConf(const ServerConf& ref) {
-    if (this != &ref) {
-		this->_listenPort = ref._listenPort;
-		this->_root = ref._root;
-		this->_serverName = ref._serverName;
-		this->_cgi = ref._cgi;
-		this->_index = ref._index;
-		this->_locationPaths = ref._locationPaths;
-		this->_locationsInfo = ref._locationsInfo;
+ServerConf::ServerConf( void )
+{
+
+}
+
+ServerConf::~ServerConf( void )
+{
+
+}
+
+ServerConf::ServerConf(const ServerConf* ref) {
+    if (this != ref) {
+        // this->_tokens = ref->_tokens;
+		this->_listenPort = ref->_listenPort;
+		this->_root = ref->_root;
+		this->_serverName = ref->_serverName;
+		this->_cgi = ref->_cgi;
+		this->_index = ref->_index;
+		// this->_locationPaths = ref->_locationPaths;
+		this->_locationsInfo = ref->_locationsInfo;
+        this->_allowedMethod = ref->_allowedMethod;
 	}
 	return ;
 }
 
-ServerConf& ServerConf::operator=(const ServerConf &obj) {
-    if (this != &obj) {
-		this->_listenPort = obj._listenPort;
-		this->_root = obj._root;
-		this->_serverName = obj._serverName;
-		this->_cgi = obj._cgi;
-		this->_index = obj._index;
-		this->_locationPaths = obj._locationPaths;
-		this->_locationsInfo = obj._locationsInfo;
+ServerConf& ServerConf::operator=(const ServerConf* obj) {
+    if (this != obj) {
+        // this->_tokens = obj->_tokens;
+		this->_listenPort = obj->_listenPort;
+		this->_root = obj->_root;
+		this->_serverName = obj->_serverName;
+		this->_cgi = obj->_cgi;
+		this->_index = obj->_index;
+		// this->_locationPaths = obj->_locationPaths;
+		this->_locationsInfo = obj->_locationsInfo;
+        this->_allowedMethod = obj->_allowedMethod;
 	}
-	return ;
+    return (*this);
 }
 

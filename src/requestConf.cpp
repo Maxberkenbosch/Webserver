@@ -35,16 +35,16 @@ int    RequestConf::getStatusCode(ServerConf** serverArray, int size) {
     if (!found)
         return (400);
     found = false;
+    _customServerConf = serverArray[_serverIndex];
     locations = serverArray[_serverIndex]->getLocationPaths();
     for (size_t i = 0; i < locations.size(); i++) {
         if (locations[i] == _path) {
-            // 
+            _customServerConf.setLocationAttributes(locations[i]);
             found = true;
         }
     }
     if (!found)
         return (404);
-    // TO DO: Add check to see if Url/path exists in Locations (from ServerConf)
     return (200);
 }
 
@@ -94,10 +94,7 @@ void    RequestConf::setRequestAttributes() {
     _path = getNthWord(_requestVec[0], 2);
     _httpVersion = getNthWord(_requestVec[0], 3);
 
-    // Setting the Heade Body variables in a map
-    // for (size_t i = 1; i < _requestVec.size() - 1; ++i) {
-    //     _requestContent.insert(std::pair<std::string, std::string>(getNthWord(_requestVec[i], 1), getRequestValue(_requestVec[i])));
-    // }
+    // Setting the Head and Body variables in a map
 
     for (size_t i = 1; i < _requestVec.size() - 1; ++i) {
         _requestContent.insert(std::pair<std::string, std::string>(getNthWord(_requestVec[i], 1), getRequestValue(_requestVec[i])));
@@ -125,5 +122,7 @@ RequestConf::RequestConf(const char *buffer, ServerConf** serverArray, int size)
 
     // Checking Valid request and returning a status code
     // Source Status codes: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
-    _statusCode = getStatusCode(serverArray, size); 
+    _statusCode = getStatusCode(serverArray, size);
+
+    printRequestInfo();
 }

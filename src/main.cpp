@@ -34,7 +34,7 @@ int main(int argc, char const *argv[])
     for( int  i = 0; i < serverCount; i++ )
     {
         serverArray[i] = new ServerConf();
-        serverArray[i]->getServerInfo(argv[1]);
+        serverArray[i]->setServerInfo(argv[1]);
     }
 
     server.setUpServer();
@@ -45,12 +45,13 @@ int main(int argc, char const *argv[])
 
         // Reading and storing the incoming request
         char buffer[30000] = {0};
+        
+        // Valread can be used to determine content-lenght
         valread = read( newSocket , buffer, 30000);
 
-        // The RequestConf objects is initialized using the read request
+        // The RequestConf objects is initialized using the read request (buffer)
         RequestConf requestconf = RequestConf(buffer, serverArray, serverCount - 1);
         // (void)requestconf;
-        requestconf.printRequestInfo();
         // printf("%s\n",buffer );
         write(newSocket, hello, strlen(hello));
         printf("------------------Hello message sent-------------------\n");
