@@ -17,6 +17,10 @@ int ServerConf::readValues = 1;
 
 // Bron om simpele webserver te snappen:
 // https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-build-a-simple-http-server-from-scratch-d1ef8945e4fa
+
+// Source to better understand poll() : https://linuxhint.com/use-poll-system-call-c/
+
+// You can test the server with localhost:8080/index.html (the port needs to be the same in the server.hpp and config file)
 int main(int argc, char const *argv[])
 {
     (void)argv;
@@ -24,17 +28,19 @@ int main(int argc, char const *argv[])
         throw std::invalid_argument( "Wrong amount of arguments" );
     long valread;
     long newSocket;
+    // The creation of the servers probably needs to happen after the serverConfs are made 
+    // because the server instance needs to know which port to listen to.
     Server server;
     // The hello variable is temporarily being used as the request line
     char *hello = strdup("HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!");
     int serverCount = countServers(argv[1]);
     
     // Dinamically creating [serverCount] amount of serverConf objects
-    ServerConf** serverArray = new ServerConf*[serverCount - 1];
+    ServerConf** serverConfArray = new ServerConf*[serverCount - 1];
     for( int  i = 0; i < serverCount; i++ )
     {
-        serverArray[i] = new ServerConf();
-        serverArray[i]->setServerInfo(argv[1]);
+        serverConfArray[i] = new ServerConf();
+        serverConfArray[i]->setServerInfo(argv[1]);
     }
 
     server.setUpServer();
@@ -44,14 +50,15 @@ int main(int argc, char const *argv[])
         newSocket = server.acceptSocket();
 
         // Reading and storing the incoming request
+        // Right now the whole request is read in one go, this needs to be changed (into reading small bits).
         char buffer[30000] = {0};
         
         // Valread can be used to determine content-lenght
         valread = read( newSocket , buffer, 30000);
 
         // The RequestConf objects is initialized using the read request (buffer)
-        RequestConf requestconf = RequestConf(buffer, serverArray, serverCount - 1);
-        // (void)requestconf;
+        RequestConf requestconf = RequestConf(buffer, serverConfArray, serverCount - 1);
+
         // printf("%s\n",buffer );
         write(newSocket, hello, strlen(hello));
         printf("------------------Hello message sent-------------------\n");
