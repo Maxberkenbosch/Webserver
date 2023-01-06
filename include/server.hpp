@@ -6,16 +6,16 @@
 
 class Server {
 public:
-    static const int PORT = 8000;
-    int     setUpServer(void);
+    int     setUpServer(int Port);
     void    setAddr(void);
     int     bindToClient(void);
     long    acceptSocket(void);
     void    closeSocket(int socket);
 
 private:
-    int         _serverFd;
-    struct      sockaddr_in _addr;     
+    int     _Port;
+    int     _serverFd;
+    struct  sockaddr_in _addr;     
     // t_listen    _listen;
 };
 
