@@ -31,13 +31,16 @@ int main(int argc, char const *argv[])
         throw std::invalid_argument( "Wrong amount of arguments" );
     long valread;
     long newSocket;
+    // // Add a new file descriptor to be monitored
+    pollfd pfd;
     // The hello variable is temporarily being used as the request line
-    char *hello = strdup("HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!");
+    // char *hello = strdup("HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!");
     int serverCount = countServers(argv[1]);
     // Dinamically creating [serverCount] amount of Server objects
     Server** serverArray = new Server*[serverCount - 1];
     // Dinamically creating [serverCount] amount of ServerConf objects
     ServerConf** serverConfArray = new ServerConf*[serverCount - 1];
+    std::vector<struct pollfd> fds;
 
     for( int  i = 0; i < serverCount; i++ )
     {
@@ -49,49 +52,57 @@ int main(int argc, char const *argv[])
     {
         serverArray[i] = new Server();
         serverArray[i]->setUpServer(serverConfArray[i]->getListenPort());
+        std::cout << "CHECK PORT: " << serverArray[i]->getPort() << std::endl;
     }
 
     while(1)
     {
         printf("\n+++++++ Waiting for new connection ++++++++\n\n");
-        std::vector<pollfd> fds;
 
-        //uitzoeken hoe de juiste server hier wordt geselecteerd!
-        newSocket = server.acceptSocket();
+        // Looping through the accept functions to create a socket for new clients
+        for (int i = 0; i < serverCount; i++)
+        {
+            newSocket = 0;
+            newSocket = serverArray[i]->acceptSocket();
+            if (newSocket) {
+                std::cout << "That's a connection on port: " << serverArray[i]->getPort() << std::endl;
+                pfd.fd = newSocket;
+                pfd.events = POLLIN;
+                fds.push_back(pfd);
+            }
+        }
 
-        // Add a new file descriptor to be monitored
-        pollfd pfd;
-        pfd.fd = newSocket;
-        pfd.events = POLLIN;
-        fds.push_back(pfd);
         
-        // Right now the whole request is read in one go, this needs to be changed (into reading small bits).
+        // // Right now the whole request is read in one go, this needs to be changed (into reading small bits).
         char buffer[30000] = {0};
-        // Call poll() with the vector as the array of pollfd structures.
-        int ret = poll(&fds[0], fds.size(), -1);
-        // an error occurred
+        // // Call poll() with the vector as the array of pollfd structures.
+        int ret = poll(fds.data(), fds.size(), -1);
+        // // an error occurred
         if (ret < 0) {
         } 
             // the call to poll() timed out
         else if (ret == 0) {
-            // Timeout
+        //     // Timeout
         } else {
-        // Process events for each file descriptor
-            for (const pollfd& pfd : fds) {
-                if (pfd.revents & POLLIN) {
-                // Data available to read on pfd.fd
-                // Valread can be used to determine content-lenght
-                valread = read( newSocket , buffer, 30000);
-                // The RequestConf objects is initialized using the read request (buffer)
-                RequestConf requestconf = RequestConf(buffer, serverConfArray, serverCount - 1);
+        // // Process events for each file descriptor
+            for (unsigned int i = 0; i < fds.size(); ++i) {
+                if (fds[i].revents & POLLIN) {
+                    std::cout << "print i = " << i << std::endl;
+        //         // Data available to read on pfd.fd
+        //         // Valread can be used to determine content-lenght
+                    valread = read(newSocket , buffer, 30000);
+        //         // The RequestConf objects is initialized using the read request (buffer)
+                    // RequestConf requestconf = RequestConf(buffer, serverConfArray, serverCount - 1);
+                    // pfd.events = pfd.events & ~POLLIN;  // clear POLLIN
+                    // pfd.events |= POLLOUT;  
                 }
-                if (pfd.revents & POLLOUT) {
-                    // Write to client
-                    write(newSocket, hello, strlen(hello));
+                if (fds[i].revents & POLLOUT) {
+        //             // Write to client
+                    // write(newSocket, hello, strlen(hello));
                 }
             }
         }
-        // printf("%s\n",buffer );
+        // // printf("%s\n",buffer );
         printf("------------------Hello message sent-------------------\n");
         close(newSocket);
     }

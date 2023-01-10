@@ -21,6 +21,7 @@ public:
 
     void        setRequestAttributes();
 
+    void        printRequestLine();
     void        printRequestInfo();
 
 private:

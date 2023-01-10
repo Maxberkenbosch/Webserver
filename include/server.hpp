@@ -12,6 +12,8 @@ public:
     long    acceptSocket(void);
     void    closeSocket(int socket);
 
+    int     getPort();
+
 private:
     int     _Port;
     int     _serverFd;

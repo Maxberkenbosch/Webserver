@@ -64,6 +64,11 @@ void    RequestConf::printRequestInfo() {
     }
 }
 
+void    RequestConf::printRequestLine() {    
+    std::cout << "Request line : " << std::endl;
+    std::cout << _method << ' ' << _path << ' ' << _httpVersion << std::endl;
+}
+
 std::string RequestConf::getMethod () {
     return(_method);
 }
@@ -124,5 +129,6 @@ RequestConf::RequestConf(const char *buffer, ServerConf** serverArray, int size)
     // Source Status codes: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
     _statusCode = getStatusCode(serverArray, size);
 
-    printRequestInfo();
+    printRequestLine();
+    // printRequestInfo();
 }

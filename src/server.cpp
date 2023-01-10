@@ -8,7 +8,9 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-
+int	Server::getPort() {
+	return(_Port);
+}
 
 void    Server::setAddr(void) {
     memset((char *)&_addr, 0, sizeof(_addr));
