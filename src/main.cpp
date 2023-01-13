@@ -29,7 +29,7 @@ int main(int argc, char const *argv[])
     (void)argv;
     if (argc != 2)
         throw std::invalid_argument( "Wrong amount of arguments" );
-    long valread;
+    // long valread;
     long newSocket;
     // // Add a new file descriptor to be monitored
     pollfd pfd;
@@ -79,11 +79,10 @@ int main(int argc, char const *argv[])
             // std::cout << "That's a connection on port: " << serverArray[i]->getPort() << std::endl;
             pfd.fd = newSocket;
             pfd.events = POLLIN;
-            pfd.revents = 0;
+            // pfd.revents = 0;
             fds.push_back(pfd);
         }
-
-
+    
         // int pid = fork();
 
         // if (pid == 0)
@@ -108,7 +107,7 @@ int main(int argc, char const *argv[])
         printf("Parent Process ID: %d\n", p_pid);
         // std::cout << "The proces is after the accept!" << std::endl;
         // // Right now the whole request is read in one go, this needs to be changed (into reading small bits).
-        char buffer[30000] = {0};
+        // char buffer[30000] = {0};
 
         // // Call poll() with the vector as the array of pollfd structures.
         int ret = poll(fds.data(), fds.size(), -1);
@@ -126,18 +125,19 @@ int main(int argc, char const *argv[])
                     // Data available to read on pfd.fd
                     std::cout << "this is fd: " << it->fd << std::endl;
                     // Valread can be used to determine content-lenght
-                    valread = read(newSocket , buffer, 100);
-                    if (valread == -1)
-                        continue;
-                        // Error handling still needed
-                    std::cout << "valread = " << valread << std::endl;
-                    // The RequestConf objects is initialized using the read request (buffer)
-                    RequestConf requestconf = RequestConf(buffer, serverConfArray, serverCount - 1);
-                    requestconf.printRequestLine();
-                    std::cout << "And now..." << it->fd << std::endl;
-                    it->events = it->events & ~POLLIN;  // clear POLLIN
-                    it->events |= POLLOUT;
-                   }
+                    // valread = read(it->fd , buffer, 100);
+                    // if (valread == -1)
+                    //     continue;
+                    //     // Error handling still needed
+                    // std::cout << "valread = " << valread << std::endl;
+                    // // The RequestConf objects is initialized using the read request (buffer)
+                    // RequestConf requestconf = RequestConf(buffer, serverConfArray, serverCount - 1);
+                    // requestconf.printRequestLine();
+
+                    // it->events = it->events & ~POLLIN;
+                    // it->events |= POLLOUT;
+                    it->events ^= POLLIN | POLLOUT;
+                }
                 if (it->revents & POLLOUT) {
         //          Write to client
                     write(it->fd, hello, strlen(hello));
