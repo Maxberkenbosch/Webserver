@@ -33,8 +33,9 @@ int main(int argc, char const *argv[])
     long newSocket;
     // // Add a new file descriptor to be monitored
     pollfd pfd;
+    // pollfd reset;
     // The hello variable is temporarily being used as the request line
-    // char *hello = strdup("HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!");
+    char *hello = strdup("HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!");
     int serverCount = countServers(argv[1]);
     // Dinamically creating [serverCount] amount of Server objects
     Server** serverArray = new Server*[serverCount - 1];
@@ -57,54 +58,97 @@ int main(int argc, char const *argv[])
 
     while(1)
     {
-        printf("\n+++++++ Waiting for new connection ++++++++\n\n");
-
+        // printf("\n+++++++ Waiting for new connection ++++++++\n\n");
         // Looping through the accept functions to create a socket for new clients
-        for (int i = 0; i < serverCount; i++)
-        {
-            newSocket = 0;
-            newSocket = serverArray[i]->acceptSocket();
-            if (newSocket) {
-                std::cout << "That's a connection on port: " << serverArray[i]->getPort() << std::endl;
-                pfd.fd = newSocket;
-                pfd.events = POLLIN;
-                fds.push_back(pfd);
-            }
+        // for (int i = 0; i < serverCount; i++)
+        // {
+        //     newSocket = 0;
+        //     pfd = reset;
+        //     newSocket = serverArray[i]->acceptSocket();
+        //     if (newSocket > 0) {
+        //         // std::cout << "That's a connection on port: " << serverArray[i]->getPort() << std::endl;
+        //         pfd.fd = newSocket;
+        //         pfd.events = POLLIN;
+        //         pfd.revents = 0;
+        //         fds.push_back(pfd);
+        //     }
+        // }
+
+        newSocket = serverArray[0]->acceptSocket();
+        if (newSocket > 0) {
+            // std::cout << "That's a connection on port: " << serverArray[i]->getPort() << std::endl;
+            pfd.fd = newSocket;
+            pfd.events = POLLIN;
+            pfd.revents = 0;
+            fds.push_back(pfd);
         }
 
+
+        // int pid = fork();
+
+        // if (pid == 0)
+        // {
+        //     newSocket = serverArray[0]->acceptSocket();
+        //     if (newSocket > 0) {
+        //     // std::cout << "That's a connection on port: " << serverArray[i]->getPort() << std::endl;
+        //         pfd.fd = newSocket;
+        //         pfd.events = POLLIN;
+        //         pfd.revents = 0;
+        //         fds.push_back(pfd);
+        //     }
+        //     exit (0);
+        // }
         
+        int p_id, p_pid;
+
+        p_id = getpid(); /*process id*/
+        p_pid = getpid(); /*parent process id*/
+
+        printf("Process ID: %d\n", p_id);
+        printf("Parent Process ID: %d\n", p_pid);
+        // std::cout << "The proces is after the accept!" << std::endl;
         // // Right now the whole request is read in one go, this needs to be changed (into reading small bits).
         char buffer[30000] = {0};
+
         // // Call poll() with the vector as the array of pollfd structures.
         int ret = poll(fds.data(), fds.size(), -1);
         // // an error occurred
-        if (ret < 0) {
-        } 
+        if (ret < 0) { 
             // the call to poll() timed out
-        else if (ret == 0) {
-        //     // Timeout
+            std::cout<< "poll timed out" << std::endl;
+        } else if (ret == 0) {
+            // Timeout
+            continue;
         } else {
         // // Process events for each file descriptor
-            for (unsigned int i = 0; i < fds.size(); ++i) {
-                if (fds[i].revents & POLLIN) {
-                    std::cout << "print i = " << i << std::endl;
-        //         // Data available to read on pfd.fd
-        //         // Valread can be used to determine content-lenght
-                    valread = read(newSocket , buffer, 30000);
-        //         // The RequestConf objects is initialized using the read request (buffer)
-                    // RequestConf requestconf = RequestConf(buffer, serverConfArray, serverCount - 1);
-                    // pfd.events = pfd.events & ~POLLIN;  // clear POLLIN
-                    // pfd.events |= POLLOUT;  
-                }
-                if (fds[i].revents & POLLOUT) {
-        //             // Write to client
-                    // write(newSocket, hello, strlen(hello));
+            for (std::vector<struct pollfd>::iterator it = fds.begin(); it != fds.end(); it++) {
+                if (it->revents & POLLIN) {
+                    // Data available to read on pfd.fd
+                    std::cout << "this is fd: " << it->fd << std::endl;
+                    // Valread can be used to determine content-lenght
+                    valread = read(newSocket , buffer, 100);
+                    if (valread == -1)
+                        continue;
+                        // Error handling still needed
+                    std::cout << "valread = " << valread << std::endl;
+                    // The RequestConf objects is initialized using the read request (buffer)
+                    RequestConf requestconf = RequestConf(buffer, serverConfArray, serverCount - 1);
+                    requestconf.printRequestLine();
+                    std::cout << "And now..." << it->fd << std::endl;
+                    it->events = it->events & ~POLLIN;  // clear POLLIN
+                    it->events |= POLLOUT;
+                   }
+                if (it->revents & POLLOUT) {
+        //          Write to client
+                    write(it->fd, hello, strlen(hello));
+                    std::cout << "It goes in hereee!" << std::endl;
+                    close(it->fd);
+                    fds.erase(it);                
                 }
             }
         }
-        // // printf("%s\n",buffer );
-        printf("------------------Hello message sent-------------------\n");
-        close(newSocket);
+        // printf("%s\n",buffer );
+        // printf("------------------Hello message sent-------------------\n");
     }
     // for(int i = 0; i < serverCount; i++) {
     //     std::cout << i << std::endl;

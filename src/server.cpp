@@ -30,16 +30,25 @@ long    Server::acceptSocket(void)
 {
     int addrlen = sizeof(_addr);
     long newSocket;
-
+	
+	std::cout << "now it's before accept: " << _Port << std::endl;
 	newSocket = accept(_serverFd, (struct sockaddr *)&_addr, (socklen_t*)&addrlen);
-	if (newSocket == -1)
-		std::cerr << "Could not create socket. " << strerror(errno) << std::endl;
-	// else
-	// {
-	// 	fcntl(newSocket, F_SETFL, O_NONBLOCK);
+	if (newSocket < 0)
+	{
+		// std::cout << "it's alive!" << _Port << std::endl;
+		if (errno == EAGAIN || errno == EWOULDBLOCK) 
+            return (errno);
+		else
+			std::cerr << "Could not create socket. " << strerror(errno) << std::endl;
+	}
+	else
+	{
+		fcntl(newSocket, F_SETFL, O_NONBLOCK);
 	// 	// _requests.insert(std::make_pair(socket, ""));
-	// }
-	return (newSocket);
+		std::cout << "We have a connection!: " << _Port << std::endl;
+		return (newSocket);
+	}
+	return (0);
 }
 
 void    Server::closeSocket(int socket)
@@ -52,6 +61,8 @@ int     Server::setUpServer(int Port) {
 	_Port = Port;
     _serverFd = socket(AF_INET, SOCK_STREAM, 0);
     
+	// fcntl(_serverFd, F_SETFL, O_NONBLOCK);
+
     if (_serverFd == -1)
     {
         perror("In socket");
