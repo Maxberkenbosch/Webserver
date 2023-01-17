@@ -26,13 +26,13 @@ void    Server::setAddr(void) {
 // and creates a new socket for that connection.
 // The original socket that was set up for listening is used only for accepting connections, not for exchanging data. 
 
-long    Server::acceptSocket(void)
+long    Server::acceptSocket(int socket, struct  sockaddr_in addr)
 {
-    int addrlen = sizeof(_addr);
+    int addrlen = sizeof(addr);
     long newSocket;
 	
 	std::cout << "now it's before accept: " << _Port << std::endl;
-	newSocket = accept(_serverFd, (struct sockaddr *)&_addr, (socklen_t*)&addrlen);
+	newSocket = accept(socket, (struct sockaddr *)&addr, (socklen_t*)&addrlen);
 	if (newSocket < 0)
 	{
 		// std::cout << "it's alive!" << _Port << std::endl;
@@ -61,7 +61,7 @@ int     Server::setUpServer(int Port) {
 	_Port = Port;
     _serverFd = socket(AF_INET, SOCK_STREAM, 0);
     
-	// fcntl(_serverFd, F_SETFL, O_NONBLOCK);
+	fcntl(_serverFd, F_SETFL, O_NONBLOCK);
 
     if (_serverFd == -1)
     {

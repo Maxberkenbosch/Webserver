@@ -30,10 +30,10 @@ int main(int argc, char const *argv[])
     if (argc != 2)
         throw std::invalid_argument( "Wrong amount of arguments" );
     // long valread;
-    long newSocket;
+    // long newSocket;
     // // Add a new file descriptor to be monitored
     pollfd pfd;
-    // pollfd reset;
+    pollfd reset;
     // The hello variable is temporarily being used as the request line
     char *hello = strdup("HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!");
     int serverCount = countServers(argv[1]);
@@ -56,10 +56,20 @@ int main(int argc, char const *argv[])
         std::cout << "CHECK PORT: " << serverArray[i]->getPort() << std::endl;
     }
 
+    for (int i = 0; i < serverCount; i++)
+    {
+        pfd = reset;
+        pfd.fd = serverArray[i]->_serverFd;
+        pfd.events = POLLIN;
+        // pfd.revents = 0;
+        fds.push_back(pfd);
+    }
+
     while(1)
     {
         // printf("\n+++++++ Waiting for new connection ++++++++\n\n");
         // Looping through the accept functions to create a socket for new clients
+        
         // for (int i = 0; i < serverCount; i++)
         // {
         //     newSocket = 0;
@@ -74,14 +84,14 @@ int main(int argc, char const *argv[])
         //     }
         // }
 
-        newSocket = serverArray[0]->acceptSocket();
-        if (newSocket > 0) {
-            // std::cout << "That's a connection on port: " << serverArray[i]->getPort() << std::endl;
-            pfd.fd = newSocket;
-            pfd.events = POLLIN;
-            // pfd.revents = 0;
-            fds.push_back(pfd);
-        }
+        // newSocket = serverArray[0]->acceptSocket();
+        // if (newSocket > 0) {
+        //     // std::cout << "That's a connection on port: " << serverArray[i]->getPort() << std::endl;
+        //     pfd.fd = newSocket;
+        //     pfd.events = POLLIN;
+        //     // pfd.revents = 0;
+        //     fds.push_back(pfd);
+        // }
     
         // int pid = fork();
 
@@ -98,19 +108,20 @@ int main(int argc, char const *argv[])
         //     exit (0);
         // }
         
-        int p_id, p_pid;
+        // int p_id, p_pid;
 
-        p_id = getpid(); /*process id*/
-        p_pid = getpid(); /*parent process id*/
+        // p_id = getpid(); /*process id*/
+        // p_pid = getpid(); /*parent process id*/
 
-        printf("Process ID: %d\n", p_id);
-        printf("Parent Process ID: %d\n", p_pid);
+        // printf("Process ID: %d\n", p_id);
+        // printf("Parent Process ID: %d\n", p_pid);
+
         // std::cout << "The proces is after the accept!" << std::endl;
         // // Right now the whole request is read in one go, this needs to be changed (into reading small bits).
         // char buffer[30000] = {0};
 
         // // Call poll() with the vector as the array of pollfd structures.
-        int ret = poll(fds.data(), fds.size(), -1);
+        int ret = poll(fds.data(), fds.size(), 100);
         // // an error occurred
         if (ret < 0) { 
             // the call to poll() timed out
@@ -120,10 +131,13 @@ int main(int argc, char const *argv[])
             continue;
         } else {
         // // Process events for each file descriptor
-            for (std::vector<struct pollfd>::iterator it = fds.begin(); it != fds.end(); it++) {
-                if (it->revents & POLLIN) {
+            for (int i = 0; i < serverCount; i++)
+            {
+                long newSocket = serverArray[i]->acceptSocket(serverArray[i]->_serverFd, serverArray[i]->_addr);
+                if (fds[i].revents & POLLIN)
+                {
                     // Data available to read on pfd.fd
-                    std::cout << "this is fd: " << it->fd << std::endl;
+                    std::cout << "this is fd: " << newSocket << std::endl;
                     // Valread can be used to determine content-lenght
                     // valread = read(it->fd , buffer, 100);
                     // if (valread == -1)
@@ -136,14 +150,18 @@ int main(int argc, char const *argv[])
 
                     // it->events = it->events & ~POLLIN;
                     // it->events |= POLLOUT;
-                    it->events ^= POLLIN | POLLOUT;
+                    fds[i].events ^= POLLIN | POLLOUT;
+                    fds[i].revents = 4;
+                    std::cout << "It does do this right?" << std::endl;
+                    std::cout << "poll check: " << fds[i].revents <<std::endl;
                 }
-                if (it->revents & POLLOUT) {
+                if (fds[i].revents & POLLOUT) {
         //          Write to client
-                    write(it->fd, hello, strlen(hello));
                     std::cout << "It goes in hereee!" << std::endl;
-                    close(it->fd);
-                    fds.erase(it);                
+                    int bytes_sent = send(newSocket, hello, strlen(hello), 0);
+                    if (bytes_sent <= 0)
+                        std::cout << "A Send error occured" << std::endl;
+                    close(newSocket);
                 }
             }
         }
