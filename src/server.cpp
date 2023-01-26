@@ -43,7 +43,7 @@ long    Server::acceptSocket(int socket, struct  sockaddr_in addr)
 	}
 	else
 	{
-		fcntl(newSocket, F_SETFL, O_NONBLOCK);
+		// fcntl(newSocket, F_SETFL, O_NONBLOCK);
 	// 	// _requests.insert(std::make_pair(socket, ""));
 		std::cout << "We have a connection!: " << _Port << std::endl;
 		return (newSocket);
@@ -61,7 +61,7 @@ int     Server::setUpServer(int Port) {
 	_Port = Port;
     _serverFd = socket(AF_INET, SOCK_STREAM, 0);
     
-	fcntl(_serverFd, F_SETFL, O_NONBLOCK);
+	// fcntl(_serverFd, F_SETFL, O_NONBLOCK);
 
     if (_serverFd == -1)
     {
